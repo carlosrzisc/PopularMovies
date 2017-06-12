@@ -40,12 +40,10 @@ class DetailsFragment : Fragment() {
         if (arguments != null) {
             paramMovie = arguments.getParcelable<Movie>(ARG_MOVIE)
 
-            trailersAdapter = TrailersAdapter(context = activity, listener = object: TrailersAdapter.OnTrailerClickListener {
-                override fun onClick(trailer: MovieTrailer) {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(trailer.link))
-                    activity.startActivity(intent)
-                }
-            })
+            trailersAdapter = TrailersAdapter(context = activity) { trailer ->
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(trailer.link))
+                activity.startActivity(intent)
+            }
 
             loaderCallbacks = object: LoaderManager.LoaderCallbacks<List<MovieTrailer>> {
                 override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<MovieTrailer>> {

@@ -13,38 +13,20 @@ import com.squareup.picasso.Picasso
  * Recycler View movies adapter
  * Created by carlos on 5/23/17.
  */
-class MoviesAdapter(private var context: Context, var movies:ArrayList<Movie> = ArrayList<Movie>(), var listener:OnItemClickListener) : RecyclerView.Adapter<MoviesAdapter.MovieHolder>() {
+class MoviesAdapter(private val context: Context, var movies:ArrayList<Movie> = ArrayList<Movie>(), val listener: (Movie) -> Unit) : RecyclerView.Adapter<MoviesAdapter.MovieHolder>() {
 
-    override fun getItemCount(): Int {
-        return movies.size
-    }
+    override fun getItemCount() = movies.size
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MovieHolder {
-        val v = LayoutInflater.from(context).inflate(R.layout.item_movie, parent, false)
-        return MovieHolder(v)
-    }
+    override fun onBindViewHolder(holder: MovieHolder?, position: Int) =
+            (holder as MovieHolder).bind(movies[position], listener)
 
-    override fun onBindViewHolder(holder: MovieHolder?, position: Int) {
-        (holder as MovieHolder).bindData(movies.get(position))
-    }
+    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MovieHolder =
+            MovieHolder(LayoutInflater.from(context).inflate(R.layout.item_movie, parent, false))
 
-    inner class MovieHolder(private val movieView: View): RecyclerView.ViewHolder(movieView), View.OnClickListener {
-        init {
-            movieView.setOnClickListener(this)
-        }
-
-        override fun onClick(item: View?) {
-            listener.onClick(movies[adapterPosition])
-        }
-
-        fun bindData(movie: Movie) {
+    inner class MovieHolder(private val movieView: View): RecyclerView.ViewHolder(movieView) {
+        fun bind(movie: Movie, listener: (Movie) -> Unit) = with(movieView) {
             Picasso.with(context).load(movie.posterPath).into(movieView.findViewById(R.id.item_poster) as ImageView)
+            setOnClickListener { listener(movie) }
         }
-    }
-
-    interface OnItemClickListener {
-        fun onClick(movie: Movie)
     }
 }
-
-

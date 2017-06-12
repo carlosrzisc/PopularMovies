@@ -39,13 +39,11 @@ class MoviesFragment : Fragment() {
         setHasOptionsMenu(true)
         preferences = PreferenceManager.getDefaultSharedPreferences(activity)
 
-        moviesAdapter = MoviesAdapter(context = activity, listener = object: MoviesAdapter.OnItemClickListener {
-            override fun onClick(movie: Movie) {
-                val intent = Intent(activity, DetailsActivity::class.java)
-                intent.putExtra(DetailsFragment.ARG_MOVIE, movie)
-                startActivity(intent)
-            }
-        })
+        moviesAdapter = MoviesAdapter(context = activity) { movie ->
+            val intent = Intent(activity, DetailsActivity::class.java)
+            intent.putExtra(DetailsFragment.ARG_MOVIE, movie)
+            startActivity(intent)
+        }
 
         loaderCallbacks = object: LoaderManager.LoaderCallbacks<List<Movie>> {
             override fun onLoaderReset(loader: Loader<List<Movie>>?) {
