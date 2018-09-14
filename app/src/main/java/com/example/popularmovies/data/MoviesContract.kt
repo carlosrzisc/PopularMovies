@@ -11,7 +11,7 @@ import android.provider.BaseColumns
  */
 object MoviesContract {
     val CONTENT_AUTHORITY: String = "com.example.popularmovies"
-    val BASE_CONTENT_URI: Uri = Uri.parse("content://" + CONTENT_AUTHORITY)
+    val BASE_CONTENT_URI: Uri = Uri.parse("content://$CONTENT_AUTHORITY")
     val PATH_MOVIE: String = "movie"
 
     object MovieEntry: BaseColumns {
@@ -27,9 +27,9 @@ object MoviesContract {
         val CONTENT_URI: Uri =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIE).build()
         val CONTENT_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE
+                "${ContentResolver.CURSOR_DIR_BASE_TYPE}/$CONTENT_AUTHORITY/$PATH_MOVIE"
         val CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE
+                "${ContentResolver.CURSOR_ITEM_BASE_TYPE}/$CONTENT_AUTHORITY/$PATH_MOVIE"
 
         fun buildMovieUri(id:Long):Uri {
             return ContentUris.withAppendedId(CONTENT_URI, id)

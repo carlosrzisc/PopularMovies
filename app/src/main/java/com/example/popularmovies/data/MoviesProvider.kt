@@ -26,7 +26,7 @@ class MoviesProvider: ContentProvider() {
             val authority = MoviesContract.CONTENT_AUTHORITY
 
             matcher.addURI(authority, MoviesContract.PATH_MOVIE, MOVIES)
-            matcher.addURI(authority, MoviesContract.PATH_MOVIE + "/#", ITEM_MOVIE)
+            matcher.addURI(authority, "${MoviesContract.PATH_MOVIE}/#", ITEM_MOVIE)
 
             return matcher
         }
@@ -50,10 +50,10 @@ class MoviesProvider: ContentProvider() {
                 if (_id != null && _id > 0) {
                     builtUri = MoviesContract.MovieEntry.buildMovieUri(_id)
                 } else {
-                    throw SQLException("Failed to insert object movie into " + uri)
+                    throw SQLException("Failed to insert object movie into $uri")
                 }
             }
-            else -> throw UnsupportedOperationException("Uri undefined: " + uri)
+            else -> throw UnsupportedOperationException("Uri undefined: $uri")
         }
         context.contentResolver.notifyChange(uri, null)
         return builtUri
@@ -72,10 +72,10 @@ class MoviesProvider: ContentProvider() {
             ITEM_MOVIE -> retCursor = movieDbHelper?.readableDatabase?.query(
                     MoviesContract.MovieEntry.MOVIES_TABLE,
                     projection,
-                    BaseColumns._ID + " = ? ",
+                    "${BaseColumns._ID} = ? ",
                     arrayOf(ContentUris.parseId(uri).toString()), null, null,
                     sortOrder) as Cursor
-            else -> throw UnsupportedOperationException("Uri undefined: " + uri)
+            else -> throw UnsupportedOperationException("Uri undefined: $uri")
         }
         retCursor.setNotificationUri(context?.contentResolver, uri)
         return retCursor
@@ -95,9 +95,9 @@ class MoviesProvider: ContentProvider() {
             ITEM_MOVIE -> rowsUpdated = db?.update(
                     MoviesContract.MovieEntry.MOVIES_TABLE,
                     values,
-                    BaseColumns._ID + " = ?",
+                    "${BaseColumns._ID} = ?",
                     arrayOf(ContentUris.parseId(uri).toString())) as Int
-            else -> throw UnsupportedOperationException("Uri undefined: " + uri)
+            else -> throw UnsupportedOperationException("Uri undefined: $uri")
         }
         if (rowsUpdated != 0) {
             context?.contentResolver?.notifyChange(uri, null)
@@ -114,9 +114,9 @@ class MoviesProvider: ContentProvider() {
                         MoviesContract.MovieEntry.MOVIES_TABLE, selection, selectionArgs) as Int
             ITEM_MOVIE ->
                 rowsDeleted = db?.delete(MoviesContract.MovieEntry.MOVIES_TABLE,
-                        BaseColumns._ID + " = ?",
+                        "${BaseColumns._ID} = ?",
                         arrayOf(ContentUris.parseId(uri).toString())) as Int
-            else -> throw UnsupportedOperationException("Uri undefined: " + uri)
+            else -> throw UnsupportedOperationException("Uri undefined: $uri")
         }
         return rowsDeleted
     }
@@ -126,7 +126,7 @@ class MoviesProvider: ContentProvider() {
         when (match) {
             MOVIES -> return MoviesContract.MovieEntry.CONTENT_TYPE
             ITEM_MOVIE -> return MoviesContract.MovieEntry.CONTENT_ITEM_TYPE
-            else -> throw UnsupportedOperationException("Uri undefined: " + uri)
+            else -> throw UnsupportedOperationException("Uri undefined: $uri")
         }
     }
 
@@ -135,5 +135,4 @@ class MoviesProvider: ContentProvider() {
         movieDbHelper?.close()
         super.shutdown()
     }
-
 }

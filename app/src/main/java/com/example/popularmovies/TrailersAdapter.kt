@@ -13,19 +13,22 @@ import com.squareup.picasso.Picasso
  * Recycler View trailers adapter
  * Created by carlos on 6/6/17.
  */
-class TrailersAdapter(private val context: Context, var trailers:ArrayList<MovieTrailer> = ArrayList(), val listener: (MovieTrailer) -> Unit) : RecyclerView.Adapter<TrailersAdapter.TrailerHolder>() {
+class TrailersAdapter(private val context: Context,
+                      var trailers:ArrayList<MovieTrailer> = ArrayList(),
+                      private val listener: (MovieTrailer) -> Unit) :
+        RecyclerView.Adapter<TrailersAdapter.TrailerHolder>() {
 
     override fun getItemCount(): Int = trailers.size
 
-    override fun onBindViewHolder(holder: TrailerHolder?, position: Int) =
-        (holder as TrailerHolder).bind(trailers.get(position), listener)
+    override fun onBindViewHolder(holder: TrailerHolder, position: Int) =
+        holder.bind(trailers[position], listener)
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): TrailerHolder =
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrailerHolder =
         TrailerHolder(LayoutInflater.from(context).inflate(R.layout.item_trailer, parent, false))
 
     inner class TrailerHolder(private val trailerView: View): RecyclerView.ViewHolder(trailerView) {
         fun bind(trailer: MovieTrailer, listener: (MovieTrailer) -> Unit) = with(trailerView) {
-            Picasso.with(context).load(trailer.image).into(trailerView.findViewById(R.id.image_trailer) as ImageView)
+            Picasso.get().load(trailer.image).into(trailerView.findViewById(R.id.image_trailer) as ImageView)
             setOnClickListener { listener(trailer) }
         }
     }

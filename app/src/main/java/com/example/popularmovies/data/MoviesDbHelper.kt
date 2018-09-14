@@ -17,21 +17,21 @@ class MoviesDbHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAM
     }
 
     override fun onCreate(sqLiteDatabase: SQLiteDatabase?) {
-        val SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MoviesContract.MovieEntry.MOVIES_TABLE + " (" +
-                BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                MoviesContract.MovieEntry.MOVIE_ID + " INTEGER UNIQUE NOT NULL, " +
-                MoviesContract.MovieEntry.TITLE + " TEXT NOT NULL, " +
-                MoviesContract.MovieEntry.POSTER + " TEXT NOT NULL, " +
-                MoviesContract.MovieEntry.BACKDROP + " TEXT NOT NULL, " +
-                MoviesContract.MovieEntry.OVERVIEW + " TEXT NOT NULL, " +
-                MoviesContract.MovieEntry.VOTE_AVERAGE + " TEXT NOT NULL, " +
-                MoviesContract.MovieEntry.RELEASE_DATE + " TEXT NOT NULL" + " );"
+        val SQL_CREATE_MOVIE_TABLE = "CREATE TABLE ${MoviesContract.MovieEntry.MOVIES_TABLE} (" +
+                "${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "${MoviesContract.MovieEntry.MOVIE_ID} INTEGER UNIQUE NOT NULL, " +
+                "${MoviesContract.MovieEntry.TITLE} TEXT NOT NULL, " +
+                "${MoviesContract.MovieEntry.POSTER} TEXT NOT NULL, " +
+                "${MoviesContract.MovieEntry.BACKDROP} TEXT NOT NULL, " +
+                "${MoviesContract.MovieEntry.OVERVIEW} TEXT NOT NULL, " +
+                "${MoviesContract.MovieEntry.VOTE_AVERAGE} TEXT NOT NULL, " +
+                "${MoviesContract.MovieEntry.RELEASE_DATE} TEXT NOT NULL" + " );"
 
         sqLiteDatabase?.execSQL(SQL_CREATE_MOVIE_TABLE)
     }
 
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase?, p1: Int, p2: Int) {
-        sqLiteDatabase?.execSQL("drop table if exists " + MoviesContract.MovieEntry.MOVIES_TABLE)
+        sqLiteDatabase?.execSQL("drop table if exists ${MoviesContract.MovieEntry.MOVIES_TABLE}")
         onCreate(sqLiteDatabase)
     }
 }

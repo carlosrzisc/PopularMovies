@@ -39,37 +39,43 @@ class MoviesFragment : Fragment() {
         setHasOptionsMenu(true)
         preferences = PreferenceManager.getDefaultSharedPreferences(activity)
 
-        moviesAdapter = MoviesAdapter(context = activity) { movie ->
-            val intent = Intent(activity, DetailsActivity::class.java)
-            intent.putExtra(DetailsFragment.ARG_MOVIE, movie)
-            startActivity(intent)
+        moviesAdapter = activity?.let {
+            MoviesAdapter(context = it) { movie ->
+                val intent = Intent(activity, DetailsActivity::class.java)
+                intent.putExtra(DetailsFragment.ARG_MOVIE, movie)
+                startActivity(intent)
+            }
         }
 
-        loaderCallbacks = object: LoaderManager.LoaderCallbacks<List<Movie>> {
-            override fun onLoaderReset(loader: Loader<List<Movie>>?) {
+        loaderCallbacks = object : LoaderManager.LoaderCallbacks<List<Movie>> {
+            override fun onLoaderReset(loader: Loader<List<Movie>>) {
                 moviesAdapter?.movies?.clear()
             }
 
-            override fun onLoadFinished(loader: Loader<List<Movie>>?, data: List<Movie>?) {
+            override fun onLoadFinished(loader: Loader<List<Movie>>, data: List<Movie>) {
                 moviesAdapter?.movies = data as ArrayList<Movie>
                 moviesAdapter?.notifyDataSetChanged()
             }
 
             override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Movie>> {
                 val sortBy = preferences!!.getString(PREF, URL_POPULARITY)
-                return MoviesLoader(activity, sortBy)
+                return activity?.let { MoviesLoader(it, sortBy) } as Loader<List<Movie>>
             }
         }
-        if (Utility.hasInternetConnection(activity)) {
-            activity.supportLoaderManager.initLoader(0, null, loaderCallbacks)?.forceLoad()
-        } else {
-            Toast.makeText(activity, getString(R.string.error_no_connection), Toast.LENGTH_LONG).show()
+        activity?.let { context ->
+            if (Utility.hasInternetConnection(context)) {
+                context.supportLoaderManager.initLoader(
+                        0,
+                        null,
+                        loaderCallbacks as LoaderManager.LoaderCallbacks<List<Movie>>).forceLoad()
+            } else {
+                Toast.makeText(context, getString(R.string.error_no_connection), Toast.LENGTH_LONG).show()
+            }
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val rootView = inflater?.inflate(R.layout.fragment_movies, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val rootView = inflater.inflate(R.layout.fragment_movies, container, false)
 
         val recyclerView = rootView?.findViewById(R.id.recyclerview_movies) as RecyclerView
         recyclerView.setHasFixedSize(true)
@@ -98,10 +104,16 @@ class MoviesFragment : Fragment() {
     }
 
     private fun fetchMovies() {
-        if (Utility.hasInternetConnection(activity)) {
-            activity.supportLoaderManager.restartLoader(0, null, loaderCallbacks)?.forceLoad()
-        } else {
-            Toast.makeText(activity, getString(R.string.error_no_connection), Toast.LENGTH_LONG).show()
+        activity?.let { context ->
+            if (Utility.hasInternetConnection(context)) {
+                context.supportLoaderManager.restartLoader(
+                        0,
+                        null,
+                        loaderCallbacks as LoaderManager.LoaderCallbacks<List<Movie>>)
+                            .forceLoad()
+            } else {
+                Toast.makeText(context, getString(R.string.error_no_connection), Toast.LENGTH_LONG).show()
+            }
         }
     }
 

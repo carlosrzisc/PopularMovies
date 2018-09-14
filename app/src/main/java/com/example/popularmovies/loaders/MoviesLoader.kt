@@ -18,7 +18,7 @@ import com.example.popularmovies.model.Movie
  * AsyncTaskLoader to fetch Movies
  * Created by carlos on 5/23/17.
  */
-class MoviesLoader(context: Context?, val sortBy: String?) : AsyncTaskLoader<List<Movie>>(context) {
+class MoviesLoader(context: Context, val sortBy: String?) : AsyncTaskLoader<List<Movie>>(context) {
     private val MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/"
     private val POSTER_BASE_URL = "http://image.tmdb.org/t/p/w185"
     private val BACKDROP_BASE_URL = "https://image.tmdb.org/t/p/w300"
@@ -56,19 +56,19 @@ class MoviesLoader(context: Context?, val sortBy: String?) : AsyncTaskLoader<Lis
         if (cursor?.moveToFirst() as Boolean) {
             do {
                 val title = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.TITLE))
-                val movie_id = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.MOVIE_ID))
+                val movieId = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.MOVIE_ID))
                 val poster = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.POSTER))
                 val backdrop = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.BACKDROP))
                 val overview = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.OVERVIEW))
-                val vote_average = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.VOTE_AVERAGE))
-                val release_date = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.RELEASE_DATE))
+                val voteAverage = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.VOTE_AVERAGE))
+                val releaseDate = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.RELEASE_DATE))
 
                 val movie = Movie(
-                        id = movie_id,
+                        id = movieId,
                         title = title,
                         posterPath =  poster,
-                        voteAverage = vote_average,
-                        releaseDate = release_date,
+                        voteAverage = voteAverage,
+                        releaseDate = releaseDate,
                         overview = overview,
                         backDropPath = backdrop)
                 favoriteMovies.add(movie)
@@ -80,7 +80,7 @@ class MoviesLoader(context: Context?, val sortBy: String?) : AsyncTaskLoader<Lis
 
     private fun callAPI(url: URL?): String? {
         val urlConnection = url!!.openConnection() as HttpURLConnection
-        try {
+        return try {
             val movieInputStream = urlConnection.inputStream
 
             val scanner = Scanner(movieInputStream)
@@ -88,9 +88,9 @@ class MoviesLoader(context: Context?, val sortBy: String?) : AsyncTaskLoader<Lis
 
             val hasInput = scanner.hasNext()
             if (hasInput) {
-                return scanner.next()
+                scanner.next()
             } else {
-                return null
+                null
             }
         } finally {
             urlConnection.disconnect()
@@ -104,7 +104,7 @@ class MoviesLoader(context: Context?, val sortBy: String?) : AsyncTaskLoader<Lis
 
         val movies = jsonObject.getJSONArray(JSON_ROOT)
 
-        for (i in 0..movies.length() - 1) {
+        for (i in 0 until movies.length()) {
             val movieJSON = movies.getJSONObject(i)
             val movieId = movieJSON.getString(JSON_MOVIE_ID)
             val posterPath = movieJSON.getString(JSON_MOVIE_POSTER)

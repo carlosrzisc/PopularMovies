@@ -38,38 +38,45 @@ class DetailsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            paramMovie = arguments.getParcelable<Movie>(ARG_MOVIE)
+            paramMovie = arguments?.getParcelable(ARG_MOVIE)
 
-            trailersAdapter = TrailersAdapter(context = activity) { trailer ->
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(trailer.link))
-                activity.startActivity(intent)
+            trailersAdapter = activity?.let { context ->
+                TrailersAdapter(context) { trailer ->
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(trailer.link))
+                    context.startActivity(intent)
+                }
             }
 
             loaderCallbacks = object: LoaderManager.LoaderCallbacks<List<MovieTrailer>> {
                 override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<MovieTrailer>> {
-                    return TrailersLoader(activity, paramMovie?.id)
+                    return activity?.let { TrailersLoader(it, paramMovie?.id) } as Loader<List<MovieTrailer>>
                 }
 
-                override fun onLoaderReset(loader: Loader<List<MovieTrailer>>?) {
+                override fun onLoaderReset(loader: Loader<List<MovieTrailer>>) {
                     trailersAdapter?.trailers?.clear()
                 }
 
-                override fun onLoadFinished(loader: Loader<List<MovieTrailer>>?, data: List<MovieTrailer>?) {
+                override fun onLoadFinished(loader: Loader<List<MovieTrailer>>, data: List<MovieTrailer>) {
                     trailersAdapter?.trailers = data as ArrayList<MovieTrailer>
                     trailersAdapter?.notifyDataSetChanged()
                 }
             }
-            if (Utility.hasInternetConnection(activity)) {
-                activity.supportLoaderManager.initLoader(0, null, loaderCallbacks)?.forceLoad()
-            } else {
-                Toast.makeText(activity, getString(R.string.error_no_connection), Toast.LENGTH_LONG).show()
+            activity?.let { context ->
+                if (Utility.hasInternetConnection(context)) {
+                    context.supportLoaderManager.initLoader(
+                            0,
+                            null,
+                            loaderCallbacks as LoaderManager.LoaderCallbacks<List<MovieTrailer>>)
+                                .forceLoad()
+                } else {
+                    Toast.makeText(context, getString(R.string.error_no_connection), Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val rootView = inflater?.inflate(R.layout.fragment_detail, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val rootView = inflater.inflate(R.layout.fragment_detail, container, false)
 
         val moviePoster = rootView?.findViewById(R.id.details_image_poster) as ImageView
         val movieTitle = rootView.findViewById(R.id.details_movie_title) as TextView
@@ -79,7 +86,7 @@ class DetailsFragment : Fragment() {
         val trailers = rootView.findViewById(R.id.list_trailers) as RecyclerView
         favoriteSwitch = rootView.findViewById(R.id.details_favorite_switch) as ImageView
 
-        Picasso.with(activity).load(paramMovie?.posterPath).into(moviePoster)
+        Picasso.get().load(paramMovie?.posterPath).into(moviePoster)
         movieTitle.text = paramMovie?.title
         movieRelease.text = paramMovie?.releaseDate
         movieRating.text = paramMovie?.voteAverage
@@ -90,7 +97,8 @@ class DetailsFragment : Fragment() {
         trailers.adapter = trailersAdapter
 
         if (isFavoriteMovie(paramMovie?.id as String)) {
-            favoriteSwitch?.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.ic_favorite_black_24dp))
+            favoriteSwitch?.setImageDrawable(activity?.let {
+                ContextCompat.getDrawable(it, R.drawable.ic_favorite_black_24dp) })
         }
         favoriteSwitch?.setOnClickListener { toggleFavMovie(paramMovie as Movie) }
 
@@ -118,17 +126,17 @@ class DetailsFragment : Fragment() {
 
     private fun isFavoriteMovie(movieId: String): Boolean {
         var movieExists = false
-        val cursor = activity.contentResolver.query(
+        val cursor = activity?.contentResolver?.query(
                 MoviesContract.MovieEntry.CONTENT_URI,
                 null,
-                MoviesContract.MovieEntry.MOVIE_ID + " = ?",
+                "${MoviesContract.MovieEntry.MOVIE_ID} = ?",
                 arrayOf(movieId),
                 null )
 
         if (cursor != null && cursor.count > 0) {
             movieExists = true
         }
-        cursor.close()
+        cursor?.close()
         return movieExists
     }
 
@@ -141,11 +149,12 @@ class DetailsFragment : Fragment() {
     }
 
     private fun removeMovie(id: String) {
-        activity.contentResolver.delete(
+        activity?.contentResolver?.delete(
                 MoviesContract.MovieEntry.CONTENT_URI,
-                MoviesContract.MovieEntry.MOVIE_ID + " = ?",
+                "${MoviesContract.MovieEntry.MOVIE_ID} = ?",
                 arrayOf(id) )
-        favoriteSwitch?.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.ic_favorite_border_black_24dp))
+        favoriteSwitch?.setImageDrawable(activity?.let {
+            ContextCompat.getDrawable(it, R.drawable.ic_favorite_border_black_24dp) })
     }
 
     private fun addMovie(movie: Movie) {
@@ -158,9 +167,10 @@ class DetailsFragment : Fragment() {
         values.put(MoviesContract.MovieEntry.RELEASE_DATE, movie.releaseDate)
         values.put(MoviesContract.MovieEntry.VOTE_AVERAGE, movie.voteAverage)
 
-        activity.contentResolver.insert(MoviesContract.MovieEntry.CONTENT_URI, values)
+        activity?.contentResolver?.insert(MoviesContract.MovieEntry.CONTENT_URI, values)
 
-        favoriteSwitch?.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.ic_favorite_black_24dp))
+        favoriteSwitch?.setImageDrawable(activity?.let {
+            ContextCompat.getDrawable(it, R.drawable.ic_favorite_black_24dp) })
     }
 
 }// Required empty public constructor

@@ -1,20 +1,13 @@
 package com.example.popularmovies.loaders
 
 import android.content.Context
-import android.net.Uri
-import android.support.v4.content.AsyncTaskLoader
 import com.example.popularmovies.model.MovieTrailer
-import java.net.HttpURLConnection
-import java.net.URL
-import java.util.*
-import org.json.JSONObject
-
 
 /**
  * AsyncTaskLoader to fetch Movie trailers
  * Created by carlos on 6/6/17.
  */
-class TrailersLoader(context: android.content.Context?, val movieId: String?) : android.support.v4.content.AsyncTaskLoader<List<MovieTrailer>>(context) {
+class TrailersLoader(context: Context, val movieId: String?) : android.support.v4.content.AsyncTaskLoader<List<MovieTrailer>>(context) {
     private val MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/"
     private val API_KEY = com.example.popularmovies.BuildConfig.API_KEY
     private val API_PARAM = "api_key"

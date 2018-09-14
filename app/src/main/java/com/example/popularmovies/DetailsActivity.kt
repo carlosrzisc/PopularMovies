@@ -8,7 +8,6 @@ import com.squareup.picasso.Picasso
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.app.NavUtils
 import android.support.v4.content.ContextCompat
-import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.example.popularmovies.model.Movie
 
@@ -18,18 +17,18 @@ class DetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
 
-        val collapsingToolbar = findViewById(R.id.collapsing_toolbar) as CollapsingToolbarLayout
-        setSupportActionBar(findViewById(R.id.toolbar) as Toolbar)
+        val collapsingToolbar = findViewById<CollapsingToolbarLayout>(R.id.collapsing_toolbar)
+        setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val movie = intent.getParcelableExtra<Movie>(DetailsFragment.ARG_MOVIE)
 
         collapsingToolbar.setExpandedTitleColor(ContextCompat.getColor(this, R.color.transparent))
-        collapsingToolbar.setCollapsedTitleTextColor(Color.rgb(255, 255, 255));
+        collapsingToolbar.setCollapsedTitleTextColor(Color.rgb(255, 255, 255))
         collapsingToolbar.title = movie.title
 
-        val backdropImageView = findViewById(R.id.expandedImage) as ImageView
-        Picasso.with(this).load(movie.backDropPath).into(backdropImageView)
+        val backdropImageView = findViewById<ImageView>(R.id.expandedImage)
+        Picasso.get().load(movie.backDropPath).into(backdropImageView)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().add(R.id.details_container, DetailsFragment.newInstance(movie)).commit()
@@ -43,6 +42,6 @@ class DetailsActivity : AppCompatActivity() {
                 return true
             }
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 }

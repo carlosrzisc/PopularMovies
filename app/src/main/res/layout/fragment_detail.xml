@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="16dp"
-    tools:context="com.example.popularmovies.DetailFragment">
+    tools:context="com.example.popularmovies.DetailsFragment">
 
     <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
@@ -31,8 +31,7 @@
         android:textStyle="bold"
         android:layout_margin="10dp"
         app:layout_constraintLeft_toRightOf="@+id/cardViewPoster"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_constraintLeft_creator="1" />
+        app:layout_constraintTop_toBottomOf="@+id/details_favorite_switch" />
 
     <TextView
         android:id="@+id/details_movie_release"
@@ -40,7 +39,6 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/details_movie_title"
         app:layout_constraintLeft_toLeftOf="@+id/details_movie_title"
-        app:layout="@+id/details_movie_title"
         android:layout_marginTop="15dp" />
 
     <TextView
